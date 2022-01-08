@@ -26,6 +26,7 @@ package polymod;
 import polymod.fs.IFileSystem;
 import haxe.Json;
 import haxe.io.Bytes;
+import haxe.io.Path;
 import polymod.util.SemanticVersion;
 import polymod.util.Util;
 import polymod.format.JsonHelp;
@@ -152,21 +153,22 @@ class Polymod
 
 		var modMeta = [];
 		var modVers = [];
-		var fileSystem = if (params.customFilesystem != null)
+		var fileSystem = (params.customFilesystem != null) ? Type.createInstance(params.customFilesystem, []) : #if sys new polymod.fs.SysFileSystem(params.modRoot) #elseif nodefs new polymod.fs.NodeFileSystem(params.modRoot) #else new polymod.fs.StubFileSystem() #end;
+		
+		if (params.frameworkParams == null || params.frameworkParams != null && params.frameworkParams.assetLibraryPaths == null)
 		{
-			Type.createInstance(params.customFilesystem, []);
+			var modMap:Map<String, String> = [];
+			var defaultAssets = ["data", "images", "music", "sounds"];
+			var foldersOnly = Lambda.filter(fileSystem.readDirectory("./assets"), _ -> { return (Path.extension(_) == "" && !defaultAssets.contains(_)); });
+			
+			for (i in 0...foldersOnly.length)
+			{
+				modMap[foldersOnly[i]] = './${foldersOnly[i]}';
+			}
+			
+			params.frameworkParams = {assetLibraryPaths: modMap};
 		}
-		else
-		{
-			#if sys
-			new polymod.fs.SysFileSystem(params.modRoot);
-			#elseif nodefs
-			new polymod.fs.NodeFileSystem(params.modRoot);
-			#else
-			new polymod.fs.StubFileSystem();
-			#end
-		}
-
+		
 		if (params.modVersions != null)
 		{
 			for (str in params.modVersions)
