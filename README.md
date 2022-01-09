@@ -1,3 +1,8 @@
+# Hello!
+
+This is a modification of Polymod and forked by the original Polymod.
+I'm just making this for adding new stuff that I think they are necessary for the Polymod to be lol.
+But basically it's Polymod.
 # Polymod
 An atomic modding framework for Haxe games/apps.
 
