@@ -155,18 +155,35 @@ class Polymod
 		var modVers = [];
 		var fileSystem = (params.customFilesystem != null) ? Type.createInstance(params.customFilesystem, []) : #if sys new polymod.fs.SysFileSystem(params.modRoot) #elseif nodefs new polymod.fs.NodeFileSystem(params.modRoot) #else new polymod.fs.StubFileSystem() #end;
 		
-		if (params.frameworkParams == null || params.frameworkParams != null && params.frameworkParams.assetLibraryPaths == null)
+		if ((params.frameworkParams == null || params.frameworkParams != null && params.frameworkParams.assetLibraryPaths == null))
 		{
-			var modMap:Map<String, String> = [];
-			var defaultAssets = ["data", "images", "music", "sounds"];
-			var foldersOnly = Lambda.filter(fileSystem.readDirectory("./assets"), _ -> { return (Path.extension(_) == "" && !defaultAssets.contains(_)); });
-			
-			for (i in 0...foldersOnly.length)
+			if ([OPENFL, LIME].contains(PolymodAssets.autoDetectFramework()))
 			{
-				modMap[foldersOnly[i]] = './${foldersOnly[i]}';
+				var folder = "./manifest";
+				if (fileSystem.exists(folder))
+				{
+					var modStuff:Map<String, String> = [];
+					var foldersOnly = Lambda.filter(fileSystem.readDirectory(folder), _ -> 
+					{
+						return (_ != "default.json");
+					});
+					if (foldersOnly != [])
+					{
+						for (i in 0...foldersOnly.length)
+						{
+							var name = foldersOnly[i].split(".")[0];
+							modStuff.set(name, './${name}');
+						}
+						trace(modStuff);
+
+						params.frameworkParams = {assetLibraryPaths: modStuff};
+					}
+				}
 			}
-			
-			params.frameworkParams = {assetLibraryPaths: modMap};
+			else
+			{
+				params.frameworkParams = {assetLibraryPaths: []};
+			}
 		}
 		
 		if (params.modVersions != null)
