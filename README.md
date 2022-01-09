@@ -7,7 +7,8 @@ Supports these frameworks:
 - NME
 - Lime (with or without OpenFL)
 - Custom (provide your own backend)
-- KHA (Coming Soon)
+
+KHA Isn't Currently supported but it will be in the future.
 
 ## NOTICE
 
