@@ -3,6 +3,11 @@
 This is a modification of Polymod and forked by the original Polymod.
 I'm just making this for adding new stuff that I think they are necessary for the Polymod to be lol.
 But basically it's Polymod.
+
+## [Framework notes for me:](https://github.com/Cheemsandfriends/Framework-Notes)
+
+Just in case I forget how the frameworks work lol
+
 # Polymod
 An atomic modding framework for Haxe games/apps.
 
